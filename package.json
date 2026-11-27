@@ -1,0 +1,16 @@
+{
+  "name": "writer-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm --filter @writer/cm6-ulysses-core test",
+    "typecheck": "pnpm -r typecheck",
+    "build:obsidian": "pnpm --filter @writer/cm6-ulysses-core build && pnpm --filter ulysses-feel build",
+    "dev:obsidian": "pnpm --filter ulysses-feel dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}

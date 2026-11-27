@@ -1,0 +1,342 @@
+/*
+ * Ulysses Feel — Non-invasive Obsidian Styling
+ * Strictly scoped under body.ulysses-feel-enabled so unloading leaves zero residue.
+ * Designed to harmonize cleanly with Obsidian Default & Minimal themes.
+ */
+
+/* --- 1. Optical Typography & Measure (Ulysses 64ch / 1.6 prose / 1.2 code cap) --- */
+/* Apply on .markdown-source-view.mod-cm6 & .markdown-preview-view as well as body so
+   Ulysses Feel cleanly takes precedence over Minimal Theme Settings' inline body variables. */
+body.ulysses-feel-enabled.ulysses-feel-typography,
+body.ulysses-feel-enabled.ulysses-feel-typography .markdown-source-view.mod-cm6,
+body.ulysses-feel-enabled.ulysses-feel-typography .markdown-preview-view {
+  --file-line-width: var(--ul-measure-ch, 64rch);
+  --line-width: var(--ul-measure-ch, 64rch);
+  --line-height-normal: var(--ul-prose-line-height, 1.6);
+  --line-height: var(--ul-prose-line-height, 1.6);
+}
+
+/* Inverse heading leading (Ulysses ULThemeFontScale: lineSpacingFactor = 1 / fontSizeFactor) */
+body.ulysses-feel-enabled.ulysses-feel-typography .markdown-source-view.mod-cm6 .HyperMD-header-1 {
+  line-height: 1.25;
+}
+body.ulysses-feel-enabled.ulysses-feel-typography .markdown-source-view.mod-cm6 .HyperMD-header-2 {
+  line-height: 1.3;
+}
+body.ulysses-feel-enabled.ulysses-feel-typography .markdown-source-view.mod-cm6 .HyperMD-header-3 {
+  line-height: 1.38;
+}
+
+/* Code block line-height cap (Ulysses _fixedLineSpacing: min(prose, 1.2)) */
+body.ulysses-feel-enabled.ulysses-feel-typography .markdown-source-view.mod-cm6 .HyperMD-codeblock {
+  line-height: var(--ul-code-line-height, 1.2);
+}
+
+/* x-Height normalization across proportional prose & monospace code */
+body.ulysses-feel-enabled.ulysses-feel-xheight .markdown-source-view.mod-cm6 .cm-content,
+body.ulysses-feel-enabled.ulysses-feel-xheight .markdown-source-view.mod-cm6 .cm-inline-code,
+body.ulysses-feel-enabled.ulysses-feel-xheight .markdown-source-view.mod-cm6 .HyperMD-codeblock {
+  font-size-adjust: 0.5;
+}
+
+/* Restrained Ulysses heading scale (harmonizes Default & community themes) */
+body.ulysses-feel-enabled.ulysses-feel-heading-scale .markdown-source-view.mod-cm6,
+body.ulysses-feel-enabled.ulysses-feel-heading-scale .markdown-preview-view {
+  --h1-size: 1.35em;
+  --h2-size: 1.22em;
+  --h3-size: 1.12em;
+  --h4-size: 1.04em;
+  --h5-size: 1em;
+  --h6-size: 0.96em;
+  --h1-weight: 650;
+  --h2-weight: 600;
+  --h3-weight: 600;
+}
+
+/* CJK / mixed-script optical spacing (replaces external space.css snippet) */
+body.ulysses-feel-enabled.ulysses-feel-cjk-spacing .markdown-source-view.mod-cm6 > .cm-editor > .cm-scroller > .cm-sizer > .cm-contentContainer > .cm-content,
+body.ulysses-feel-enabled.ulysses-feel-cjk-spacing .markdown-preview-view {
+  text-autospace: normal;
+  letter-spacing: 0.025em;
+}
+
+/* --- 1b. Standalone Ulysses Canvas (Zero-Dependency Chrome & Scrollbar Hygiene) --- */
+/* Hide inline filename title via scoped CSS so titleless writing works out of the box */
+body.ulysses-feel-enabled.ulysses-feel-hide-inline-title .markdown-source-view.mod-cm6 .inline-title,
+body.ulysses-feel-enabled.ulysses-feel-hide-inline-title .markdown-preview-view .inline-title {
+  display: none;
+}
+
+/* Hide document scrollbars for clean paper feel (replaces Hider hideScroll) */
+body.ulysses-feel-enabled.ulysses-feel-hide-scrollbars .markdown-source-view.mod-cm6 > .cm-editor > .cm-scroller::-webkit-scrollbar,
+body.ulysses-feel-enabled.ulysses-feel-hide-scrollbars .markdown-preview-view::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+body.ulysses-feel-enabled.ulysses-feel-hide-scrollbars .markdown-source-view.mod-cm6 > .cm-editor > .cm-scroller,
+body.ulysses-feel-enabled.ulysses-feel-hide-scrollbars .markdown-preview-view {
+  scrollbar-width: none;
+}
+
+/* Optional Distraction-Free Canvas (hides tab bar, view header, status bar; hover top edge reveals) */
+body.ulysses-feel-enabled.ulysses-feel-distraction-free .workspace-split.mod-root .workspace-tab-header-container {
+  opacity: 0;
+  max-height: 4px;
+  overflow: hidden;
+  transition: opacity 180ms ease-out, max-height 180ms ease-out;
+}
+body.ulysses-feel-enabled.ulysses-feel-distraction-free .workspace-split.mod-root .workspace-tab-header-container:hover {
+  opacity: 1;
+  max-height: 44px;
+}
+body.ulysses-feel-enabled.ulysses-feel-distraction-free .workspace-split.mod-root .view-header {
+  opacity: 0;
+  height: 4px;
+  min-height: 4px;
+  overflow: hidden;
+  border-bottom: none;
+  transition: opacity 180ms ease-out, height 180ms ease-out;
+}
+body.ulysses-feel-enabled.ulysses-feel-distraction-free .workspace-split.mod-root .view-header:hover {
+  opacity: 1;
+  height: var(--header-height, 36px);
+}
+body.ulysses-feel-enabled.ulysses-feel-distraction-free .status-bar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+body.ulysses-feel-enabled.ulysses-feel-distraction-free .status-bar:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- 2. Hanging Outdent Margin Safety --- */
+/* Scope strictly to top-level document editor (`> .cm-editor > .cm-scroller`) so nested
+   Obsidian Live Preview table cells and embed editors never get squeezed by 8ch padding! */
+body.ulysses-feel-enabled.ulysses-feel-outdent .markdown-source-view.mod-cm6 > .cm-editor > .cm-scroller {
+  padding-left: max(var(--file-margins-x, 32px), var(--ul-outdent-width, 8ch));
+}
+
+body.ulysses-feel-enabled.ulysses-feel-outdent .markdown-source-view.mod-cm6 > .cm-editor .cm-line.ul-outdent-live-prefix {
+  text-indent: var(--ul-line-outdent, 0);
+}
+
+/* Subtle muted heading marker on inactive Live Preview lines (aligned seamlessly with active outdent) */
+body.ulysses-feel-enabled.ulysses-feel-outdent .markdown-source-view.mod-cm6 > .cm-editor.ul-show-inactive-heading-markers .cm-line.ul-outdent-inactive-heading {
+  position: relative;
+}
+
+body.ulysses-feel-enabled.ulysses-feel-outdent .markdown-source-view.mod-cm6 > .cm-editor.ul-show-inactive-heading-markers .cm-line.ul-outdent-inactive-heading::before {
+  content: attr(data-ul-heading);
+  position: absolute;
+  right: calc(100% + 0.4em);
+  font-weight: 400;
+  color: var(--text-muted);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+  white-space: pre;
+}
+
+/* Keep Obsidian fold indicator tucked gently outside the outdent column */
+body.ulysses-feel-enabled.ulysses-feel-outdent .markdown-source-view.mod-cm6 > .cm-editor .cm-line.ul-outdent-heading .cm-fold-indicator {
+  left: -3.8em;
+}
+
+/* --- 3. Three-Channel Muted Syntax Atoms (Ulysses Theme.xml philosophy) --- */
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-header,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-strong,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-em,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-code,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-quote,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-strikethrough,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor.ul-muted-syntax .cm-formatting-highlight,
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor .ul-ghost-syntax {
+  color: var(--text-muted);
+  opacity: 0.52;
+  font-weight: 400;
+}
+
+/* Match exact revealed glyph metrics for inline code backticks with zero double-padding */
+body.ulysses-feel-enabled .markdown-source-view.mod-cm6 > .cm-editor .ul-ghost-syntax.ul-ghost-code {
+  font-family: var(--font-monospace);
+  font-size: var(--code-size, 0.875em);
+  padding: 0;
+  background: transparent;
+}
+
+/* --- 4. Inactive Split-Pane Visual Hierarchy (Ulysses 0.33 alpha) --- */
+body.ulysses-feel-enabled.ulysses-feel-dim-inactive
+  .workspace-leaf:not(.mod-active)
+  .markdown-source-view.mod-cm6
+  > .cm-editor
+  > .cm-scroller
+  > .cm-sizer {
+  opacity: var(--ul-inactive-pane-opacity, 0.33);
+  transition: opacity 180ms ease-out;
+}
+
+/* --- 5. Status Bar & Settings Polish --- */
+.ul-status-bar-item {
+  cursor: pointer;
+  user-select: none;
+}
+.ul-status-bar-item:hover {
+  color: var(--text-normal);
+}
+
+.ul-settings-notice {
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border-radius: 6px;
+  border-left: 3px solid var(--text-warning, #e0a800);
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.ul-settings-notice-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ul-settings-notice-btn {
+  flex-shrink: 0;
+}
+
+/* --- 6. Ulysses Sheet List Sidebar Panel --- */
+.ul-sheet-list-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px 0 0;
+  overflow: hidden;
+}
+
+.ul-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px 8px;
+}
+
+.ul-sheet-folder-select {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  font-size: var(--font-ui-small);
+}
+
+.ul-sheet-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ul-sheet-icon-btn {
+  padding: 4px;
+  border-radius: 5px;
+}
+
+.ul-sheet-search-row {
+  padding: 0 10px 6px;
+}
+
+.ul-sheet-search-input {
+  width: 100%;
+  height: 28px;
+  font-size: var(--font-ui-small);
+  border-radius: 6px;
+}
+
+.ul-sheet-meta-bar {
+  padding: 2px 12px 6px;
+  font-size: 11px;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ul-sheet-cards {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 8px 24px;
+}
+
+.ul-sheet-card {
+  padding: 10px 10px 9px;
+  margin-bottom: 2px;
+  border-radius: 7px;
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 50%, transparent);
+  transition: background-color 120ms ease-out;
+}
+
+.ul-sheet-card:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.ul-sheet-card.is-active {
+  background-color: var(--background-modifier-active-hover, var(--background-modifier-hover));
+  box-shadow: inset 2.5px 0 0 var(--interactive-accent);
+}
+
+.ul-sheet-card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.38;
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ul-sheet-card.is-empty-sheet .ul-sheet-card-title {
+  color: var(--text-faint);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.ul-sheet-card-preview {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.ul-sheet-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.ul-sheet-card-folder {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: var(--background-secondary-alt, var(--background-modifier-hover));
+}
+
+.ul-sheet-card-words {
+  margin-left: auto;
+}
+
+.ul-sheet-empty {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: var(--font-ui-small);
+  color: var(--text-faint);
+}
