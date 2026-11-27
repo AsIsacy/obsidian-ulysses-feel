@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "lint": "pnpm --filter ulysses-feel lint",
     "test": "pnpm --filter @writer/cm6-ulysses-core test",
     "typecheck": "pnpm -r typecheck",
     "build:obsidian": "pnpm --filter @writer/cm6-ulysses-core build && pnpm --filter ulysses-feel build",

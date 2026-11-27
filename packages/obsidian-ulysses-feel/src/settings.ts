@@ -134,58 +134,13 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Ulysses Feel" });
-    containerEl.createEl("p", {
-      text: "Non-invasive Ulysses typing ergonomics powered by portable CodeMirror 6 extensions.",
-      cls: "setting-item-description",
-    });
-
-    // Non-invasive conflict notice if another typewriter plugin is active
-    const enabledPlugins: Set<string> | undefined = (
-      this.app as unknown as { plugins?: { enabledPlugins?: Set<string> } }
-    ).plugins?.enabledPlugins;
-
-    if (enabledPlugins?.has("typewriter-mode") && this.ulyssesPlugin.settings.typewriterEnabled) {
-      const warn = containerEl.createDiv({ cls: "ul-settings-notice" });
-      warn.setText(
-        "Detected community plugin 'typewriter-mode' is also enabled. To prevent two typewriter scrollers from competing, consider disabling one of them.",
-      );
-    }
-
-    // Non-invasive notice if Obsidian's native auto-pairing is still enabled alongside Ghost Auto-Pair
-    const vaultWithConfig = this.app.vault as unknown as {
-      getConfig?: (key: string) => unknown;
-      setConfig?: (key: string, val: unknown) => void;
-    };
-    const nativePairMd = vaultWithConfig.getConfig?.("autoPairMarkdown") !== false;
-    const nativePairBrackets = vaultWithConfig.getConfig?.("autoPairBrackets") !== false;
-    if (
-      this.ulyssesPlugin.settings.ghostAutoPairEnabled &&
-      (nativePairMd || nativePairBrackets)
-    ) {
-      const notice = containerEl.createDiv({ cls: "ul-settings-notice ul-settings-notice-action" });
-      const msg = notice.createSpan();
-      msg.setText(
-        "Obsidian's built-in Auto-Pair Markdown/Brackets is currently on. Turn it off so 1× Cmd+Z undoes only the closing delimiter cleanly.",
-      );
-      if (typeof vaultWithConfig.setConfig === "function") {
-        const btn = notice.createEl("button", {
-          text: "Disable Obsidian Native Auto-Pair",
-          cls: "mod-cta ul-settings-notice-btn",
-        });
-        btn.addEventListener("click", () => {
-          vaultWithConfig.setConfig?.("autoPairMarkdown", false);
-          vaultWithConfig.setConfig?.("autoPairBrackets", false);
-          this.display();
-        });
-      }
-    }
-
-    // --- Section 1: Typewriter Scrolling ---
-    containerEl.createEl("h3", { text: "Typewriter Scrolling & Baseline Indicator" });
+    // --- Section 1: Typewriter scrolling & baseline indicator ---
+    new Setting(containerEl)
+      .setName("Typewriter scrolling and baseline indicator")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Enable Typewriter Scrolling")
+      .setName("Enable typewriter scrolling")
       .setDesc("Ulysses perceptual scroll: duration = 15ms × √|Δy| with EaseInEaseOut.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.typewriterEnabled).onChange(async (v) => {
@@ -196,16 +151,16 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Scroll Anchor Mode")
+      .setName("Scroll anchor mode")
       .setDesc(
-        "Variable starts at upper 1/3 and holds typing inside your eye-level comfort band (default 25%–55%); Top/Middle/Bottom lock strictly to 30%/50%/70%.",
+        "Variable starts at upper 1/3 and holds typing inside your eye-level comfort band (default 25%–55%); Top, Middle, and Bottom lock strictly to 30%, 50%, and 70%.",
       )
       .addDropdown((d) =>
         d
-          .addOption("variable", "Variable (Upper 1/3 → Eye-level Center)")
-          .addOption("middle", "Fixed Middle (Strict 50% Lock)")
-          .addOption("top", "Fixed Top (30%)")
-          .addOption("bottom", "Fixed Bottom (70%)")
+          .addOption("variable", "Variable (upper 1/3 to eye-level center)")
+          .addOption("middle", "Fixed middle (strict 50% lock)")
+          .addOption("top", "Fixed top (30%)")
+          .addOption("bottom", "Fixed bottom (70%)")
           .addOption("off", "Off")
           .setValue(this.ulyssesPlugin.settings.typewriterMode)
           .onChange(async (v) => {
@@ -217,13 +172,12 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
 
     if (this.ulyssesPlugin.settings.typewriterMode === "variable") {
       new Setting(containerEl)
-        .setName("First-Line Starting Position (%)")
+        .setName("First-line starting position (%)")
         .setDesc("Where line 1 sits on a fresh sheet (default: 33% upper third of viewport).")
         .addSlider((s) =>
           s
             .setLimits(5, 50, 1)
             .setValue(Math.round(this.ulyssesPlugin.settings.typewriterVariableTopMargin * 100))
-            .setDynamicTooltip()
             .onChange(async (v) => {
               this.ulyssesPlugin.settings.typewriterVariableTopMargin = v / 100;
               await this.ulyssesPlugin.saveAndApply();
@@ -231,13 +185,12 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
         );
 
       new Setting(containerEl)
-        .setName("Variable Comfort Zone Ceiling (%)")
+        .setName("Variable comfort zone ceiling (%)")
         .setDesc("Upper trigger line before scrolling down (default: 25%).")
         .addSlider((s) =>
           s
             .setLimits(10, 45, 5)
             .setValue(Math.round(this.ulyssesPlugin.settings.typewriterBandTop * 100))
-            .setDynamicTooltip()
             .onChange(async (v) => {
               this.ulyssesPlugin.settings.typewriterBandTop = Math.min(
                 v / 100,
@@ -248,13 +201,12 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
         );
 
       new Setting(containerEl)
-        .setName("Variable Comfort Zone Floor (%)")
-        .setDesc("Lowest vertical position before smoothly scrolling upward (default: 55% eye-level center, neck-friendly).")
+        .setName("Variable comfort zone floor (%)")
+        .setDesc("Lowest vertical position before smoothly scrolling upward (default: 55% eye-level center).")
         .addSlider((s) =>
           s
             .setLimits(45, 85, 5)
             .setValue(Math.round(this.ulyssesPlugin.settings.typewriterBandBottom * 100))
-            .setDynamicTooltip()
             .onChange(async (v) => {
               this.ulyssesPlugin.settings.typewriterBandBottom = Math.max(
                 v / 100,
@@ -266,7 +218,7 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
     }
 
     new Setting(containerEl)
-      .setName("Smooth Perceptual Animation")
+      .setName("Smooth perceptual animation")
       .setDesc("Animate scroll position with backing-pixel snapping.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.typewriterAnimate).onChange(async (v) => {
@@ -276,7 +228,7 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Overscroll Top & Bottom Padding")
+      .setName("Overscroll top and bottom padding")
       .setDesc("Allow the very first and last lines of a note to rest at the focal anchor.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.typewriterOverscrollPadding).onChange(async (v) => {
@@ -286,8 +238,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Wheel Moves Caret in Fixed Modes")
-      .setDesc("In Top/Middle/Bottom modes, scrolling moves caret line-by-line without fighting the lock.")
+      .setName("Wheel moves caret in fixed modes")
+      .setDesc("In Top, Middle, and Bottom modes, scrolling moves the caret line by line without fighting the lock.")
       .addToggle((t) =>
         t
           .setValue(this.ulyssesPlugin.settings.typewriterWheelMovesCaretInFixed)
@@ -298,7 +250,7 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Slim Capsule Baseline Highlight")
+      .setName("Slim capsule baseline highlight")
       .setDesc("Draw Ulysses's fontSize/6 pill bar beneath the active line instead of shading the full line.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.baselineHighlightEnabled).onChange(async (v) => {
@@ -307,11 +259,11 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
         }),
       );
 
-    // --- Section 2: Focus Mode ---
-    containerEl.createEl("h3", { text: "Focus Mode" });
+    // --- Section 2: Focus mode ---
+    new Setting(containerEl).setName("Focus mode").setHeading();
 
     new Setting(containerEl)
-      .setName("Focus Granularity")
+      .setName("Focus granularity")
       .setDesc("Dim unfocused text to 20% opacity (Line, Sentence via Intl.Segmenter, or Paragraph).")
       .addDropdown((d) =>
         d
@@ -327,26 +279,27 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Unfocused Opacity")
+      .setName("Unfocused opacity")
       .setDesc("Ulysses default is 0.20.")
       .addSlider((s) =>
         s
           .setLimits(0.1, 0.6, 0.05)
           .setValue(this.ulyssesPlugin.settings.focusUnfocusedOpacity)
-          .setDynamicTooltip()
           .onChange(async (v) => {
             this.ulyssesPlugin.settings.focusUnfocusedOpacity = v;
             await this.ulyssesPlugin.saveAndApply();
           }),
       );
 
-    // --- Section 3: Ghost Auto-Pairing & Smart Editing ---
-    containerEl.createEl("h3", { text: "Ghost Auto-Pairing & Keyboard Ergonomics" });
+    // --- Section 3: Ghost auto-pairing & keyboard ergonomics ---
+    new Setting(containerEl)
+      .setName("Ghost auto-pairing and keyboard ergonomics")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Ghost Auto-Pairing")
+      .setName("Ghost auto-pairing")
       .setDesc(
-        "Auto-pair **, _, `, ==, ~~, brackets & quotes with overtype-collapse, paired backspace, and 1x Cmd+Z undo of closing tag. (Tip: turn off Obsidian's built-in 'Auto pair Markdown syntax' to avoid double pairing.)",
+        "Auto-pair **, _, `, ==, ~~, brackets, and quotes with overtype-collapse, paired backspace, and 1× Cmd+Z undo of the closing delimiter. Tip: disable Editor → Auto pair Markdown syntax and Auto pair brackets for clean single-step undo.",
       )
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.ghostAutoPairEnabled).onChange(async (v) => {
@@ -356,8 +309,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Context-Aware Tab / Shift+Tab")
-      .setDesc("Indent/outdent whole paragraph or list from any cursor column in prose; insert literal Tab inside code blocks.")
+      .setName("Context-aware Tab and Shift+Tab")
+      .setDesc("Indent or outdent the whole paragraph or list from any cursor column in prose; insert a literal tab inside code blocks.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.contextAwareTab).onChange(async (v) => {
           this.ulyssesPlugin.settings.contextAwareTab = v;
@@ -366,8 +319,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Smart List Continuation & Auto-Renumbering")
-      .setDesc("Continue bullets/tasks/numbers/quotes on Enter, exit on empty item, and renumber following ordered items automatically.")
+      .setName("Smart list continuation and auto-renumbering")
+      .setDesc("Continue bullets, tasks, numbers, and quotes on Enter, exit on empty items, and renumber following ordered items automatically.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.smartListContinuation).onChange(async (v) => {
           this.ulyssesPlugin.settings.smartListContinuation = v;
@@ -376,8 +329,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Smart Home (Home / Cmd+Left)")
-      .setDesc("Toggle between start of content (after #, -, 1., >) and column 0.")
+      .setName("Smart home (Home / Cmd+Left)")
+      .setDesc("Toggle between the start of content (after #, -, 1., >) and column 0.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.smartHome).onChange(async (v) => {
           this.ulyssesPlugin.settings.smartHome = v;
@@ -386,8 +339,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Protect Markup From OS Smart Punctuation")
-      .setDesc("Prevent macOS smart dash/quote substitution inside code blocks or when typing ----, '', ++.")
+      .setName("Protect markup from OS smart punctuation")
+      .setDesc("Prevent smart dash or quote substitution inside code blocks or when typing ----, '', or ++.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.protectPotentialMarkup).onChange(async (v) => {
           this.ulyssesPlugin.settings.protectPotentialMarkup = v;
@@ -395,12 +348,14 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
         }),
       );
 
-    // --- Section 4: Hanging Outdent & Optical Typography ---
-    containerEl.createEl("h3", { text: "Hanging Outdent & Optical Typography" });
+    // --- Section 4: Hanging outdent & optical typography ---
+    new Setting(containerEl)
+      .setName("Hanging outdent and optical typography")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Hanging Outdent for Headings & Blockquotes")
-      .setDesc("Pull active # / > markers into the left margin so heading text stays rock-steady with zero horizontal jump.")
+      .setName("Hanging outdent for headings and blockquotes")
+      .setDesc("Pull active # and > markers into the left margin so heading text stays steady with zero horizontal jump.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.hangingOutdentEnabled).onChange(async (v) => {
           this.ulyssesPlugin.settings.hangingOutdentEnabled = v;
@@ -409,8 +364,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Show Subtle Heading Markers on Inactive Lines (Live Preview)")
-      .setDesc("Display quiet muted #, ##, ### cues in the left margin of inactive Live Preview headings.")
+      .setName("Show subtle heading markers on inactive lines (Live Preview)")
+      .setDesc("Display quiet muted #, ##, and ### cues in the left margin of inactive Live Preview headings.")
       .addToggle((t) =>
         t
           .setValue(this.ulyssesPlugin.settings.showInactiveHeadingMarkers)
@@ -421,9 +376,9 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Zero-Jump Inline Syntax (Live Preview)")
+      .setName("Zero-jump inline syntax (Live Preview)")
       .setDesc(
-        "Keep muted ghost syntax markers (**, *, _, `, ~~, ==) visible when Live Preview hides them, preventing horizontal line jitter and word-wrap reflow on cursor movement.",
+        "Keep muted ghost syntax markers (**, *, _, `, ~~, ==) visible when Live Preview hides them, preventing horizontal line jitter and word-wrap reflow.",
       )
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.zeroJumpInlineSyntax).onChange(async (v) => {
@@ -433,7 +388,7 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Three-Channel Muted Syntax Tokens")
+      .setName("Three-channel muted syntax tokens")
       .setDesc("Keep Markdown formatting tokens calm and low-contrast while body text stays crisp.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.mutedSyntax).onChange(async (v) => {
@@ -443,7 +398,7 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Optical Typography Overrides")
+      .setName("Optical typography overrides")
       .setDesc("64ch reading measure, 1.6 prose line-height, 1.2 code-block line-height cap, inverse heading leading, and x-height normalization.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.typographyEnabled).onChange(async (v) => {
@@ -453,13 +408,12 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Reading Measure (characters per line)")
-      .setDesc("Ulysses default: 64ch.")
+      .setName("Reading measure (characters per line)")
+      .setDesc("Ulysses default: 64.")
       .addSlider((s) =>
         s
           .setLimits(48, 84, 2)
           .setValue(this.ulyssesPlugin.settings.measureCh)
-          .setDynamicTooltip()
           .onChange(async (v) => {
             this.ulyssesPlugin.settings.measureCh = v;
             await this.ulyssesPlugin.saveAndApply();
@@ -467,9 +421,9 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Restrained Ulysses Heading Scale")
+      .setName("Restrained Ulysses heading scale")
       .setDesc(
-        "Use Ulysses's refined H1–H6 scale (1.35em → 0.96em) so headings stay balanced even on Obsidian's Default Theme.",
+        "Use Ulysses's refined H1–H6 scale (1.35em to 0.96em) so headings stay balanced across themes.",
       )
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.ulyssesHeadingScale).onChange(async (v) => {
@@ -479,9 +433,9 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("CJK / Mixed-Script Optical Spacing")
+      .setName("CJK and mixed-script optical spacing")
       .setDesc(
-        "Enable CSS text-autospace and subtle 0.025em tracking for crisp CJK + Latin typography without external snippets.",
+        "Enable CSS text-autospace and subtle 0.025em tracking for crisp CJK and Latin typography.",
       )
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.cjkOpticalSpacing).onChange(async (v) => {
@@ -491,8 +445,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Dim Inactive Split Panes")
-      .setDesc("Dim unfocused split editors to 33% opacity (Ulysses ULDesaturatedTextRenderingModifier).")
+      .setName("Dim inactive split panes")
+      .setDesc("Dim unfocused split editors to 33% opacity.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.dimInactivePanes).onChange(async (v) => {
           this.ulyssesPlugin.settings.dimInactivePanes = v;
@@ -500,13 +454,13 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
         }),
       );
 
-    // --- Section 5: Standalone Ulysses Canvas (Zero-Dependency Chrome) ---
-    containerEl.createEl("h3", { text: "Standalone Ulysses Canvas" });
+    // --- Section 5: Standalone Ulysses canvas ---
+    new Setting(containerEl).setName("Standalone canvas").setHeading();
 
     new Setting(containerEl)
-      .setName("Hide Inline Filename Title")
+      .setName("Hide inline filename title")
       .setDesc(
-        "Hide Obsidian's inline filename header inside notes via scoped CSS for pure titleless writing (automatically restored if plugin is disabled).",
+        "Hide the inline filename header inside notes via scoped CSS for pure titleless writing.",
       )
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.hideInlineTitle).onChange(async (v) => {
@@ -516,8 +470,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Hide Editor Scrollbars")
-      .setDesc("Keep a clean paper-like writing canvas without needing the Hider plugin.")
+      .setName("Hide editor scrollbars")
+      .setDesc("Keep a clean paper-like writing canvas without scrollbars.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.hideScrollbars).onChange(async (v) => {
           this.ulyssesPlugin.settings.hideScrollbars = v;
@@ -526,9 +480,9 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Distraction-Free Canvas (Minimal Chrome)")
+      .setName("Distraction-free canvas")
       .setDesc(
-        "Hide tab bar, view header breadcrumb, and status bar (hover top edge to reveal). Toggle anytime via Command Palette.",
+        "Hide the tab bar, view header breadcrumb, and status bar (hover top edge to reveal).",
       )
       .addToggle((t) =>
         t
@@ -539,13 +493,15 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
           }),
       );
 
-    // --- Section 6: Titleless Sheets & Sheet List ---
-    containerEl.createEl("h3", { text: "Titleless Sheets & Ulysses Sheet List" });
+    // --- Section 6: Titleless sheets & sheet list ---
+    new Setting(containerEl)
+      .setName("Titleless sheets and sheet list")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Auto-Name New / Untitled Sheets From First Line")
+      .setName("Auto-name new or untitled sheets from first line")
       .setDesc(
-        "Silently rename newly created or untitled notes ('未命名', 'Untitled', 'UL-...') using their first non-empty body line. Existing user-named notes and daily notes are never touched.",
+        "Silently rename newly created or untitled notes using their first non-empty body line. Existing user-named notes and daily notes are never touched.",
       )
       .addToggle((t) =>
         t
@@ -557,7 +513,7 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Auto-Rename Delay (iCloud Safe Debounce)")
+      .setName("Auto-rename delay (ms)")
       .setDesc(
         "Wait this many milliseconds after typing stops (or immediately on switching notes) before renaming on disk.",
       )
@@ -565,7 +521,6 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
         s
           .setLimits(800, 5000, 200)
           .setValue(this.ulyssesPlugin.settings.autoTitleDebounceMs)
-          .setDynamicTooltip()
           .onChange(async (v) => {
             this.ulyssesPlugin.settings.autoTitleDebounceMs = v;
             await this.ulyssesPlugin.saveAndApply();
@@ -573,13 +528,12 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Maximum Auto-Generated Filename Length")
+      .setName("Maximum auto-generated filename length")
       .setDesc("Long first lines are cleanly truncated to this character limit.")
       .addSlider((s) =>
         s
           .setLimits(20, 80, 2)
           .setValue(this.ulyssesPlugin.settings.autoTitleMaxLength)
-          .setDynamicTooltip()
           .onChange(async (v) => {
             this.ulyssesPlugin.settings.autoTitleMaxLength = v;
             await this.ulyssesPlugin.saveAndApply();
@@ -587,8 +541,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Sheet List Preview Lines")
-      .setDesc("Number of excerpt lines shown below the first-line title in the Ulysses Sheet List sidebar.")
+      .setName("Sheet list preview lines")
+      .setDesc("Number of excerpt lines shown below the first-line title in the sheet list sidebar.")
       .addDropdown((d) =>
         d
           .addOption("1", "1 line")
@@ -603,8 +557,8 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Show Status Bar Indicator")
-      .setDesc("Quick-toggle typewriter & focus modes from the status bar.")
+      .setName("Show status bar indicator")
+      .setDesc("Quick-toggle typewriter and focus modes from the status bar.")
       .addToggle((t) =>
         t.setValue(this.ulyssesPlugin.settings.showStatusBar).onChange(async (v) => {
           this.ulyssesPlugin.settings.showStatusBar = v;

@@ -1,11 +1,12 @@
 {
   "name": "ulysses-feel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Non-invasive Ulysses-inspired typing ergonomics for Obsidian, powered by portable CodeMirror 6 extensions.",
   "type": "module",
   "scripts": {
     "build": "node esbuild.config.mjs production",
     "dev": "node esbuild.config.mjs",
+    "lint": "eslint src/",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
@@ -19,6 +20,10 @@
     "@types/node": "^22.15.0",
     "builtin-modules": "^4.0.0",
     "esbuild": "^0.25.2",
-    "obsidian": "latest"
+    "eslint": "^9.39.5",
+    "eslint-plugin-obsidianmd": "^0.6.0",
+    "globals": "^17.14.0",
+    "obsidian": "latest",
+    "typescript-eslint": "^8.74.0"
   }
 }

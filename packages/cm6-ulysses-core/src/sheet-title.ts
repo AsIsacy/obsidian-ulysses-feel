@@ -55,12 +55,13 @@ export function stripMarkdownLine(rawLine: string): string {
   line = line.replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, "$2");
   line = line.replace(/\[\[([^\]]+)\]\]/g, "$1");
 
-  // Inline code, bold, italic, strikethrough, highlight
+  // Inline code, bold, italic, strikethrough, highlight (lookbehind-free for full iOS/mobile compatibility)
   line = line
     .replace(/`+([^`]+)`+/g, "$1")
     .replace(/(\*\*|__)(.*?)\1/g, "$2")
     .replace(/(~~|==)(.*?)\1/g, "$2")
-    .replace(/(?<!\w)(\*|_)(?!\s)(.*?)(?<!\s)\1(?!\w)/g, "$2");
+    .replace(/(^|[^\w])(\*|_)(?!\s)([^\n]*?\S)\2(?=$|[^\w])/g, "$1$3")
+    .replace(/(^|[^\w])(\*|_)(?!\s)([^\n]*?\S)\2(?=$|[^\w])/g, "$1$3");
 
   // Strip leftover unclosed leading/trailing emphasis or backticks and collapse spaces
   line = line.replace(/\s+/g, " ").trim();

@@ -179,6 +179,10 @@ body.ulysses-feel-enabled.ulysses-feel-dim-inactive
 }
 
 /* --- 5. Status Bar & Settings Polish --- */
+.ul-hidden {
+  display: none;
+}
+
 .ul-status-bar-item {
   cursor: pointer;
   user-select: none;
@@ -309,6 +313,15 @@ body.ulysses-feel-enabled.ulysses-feel-dim-inactive
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-word;
+}
+.ul-sheet-card-preview.ul-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+.ul-sheet-card-preview.ul-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+.ul-sheet-card-preview.ul-clamp-3 {
+  -webkit-line-clamp: 3;
 }
 
 .ul-sheet-card-meta {

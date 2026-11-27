@@ -376,8 +376,9 @@ export class UlyssesSheetListView extends ItemView {
       titleEl.setText(item.displayTitle);
 
       if (item.preview) {
-        const previewEl = card.createDiv({ cls: "ul-sheet-card-preview" });
-        previewEl.style.setProperty("-webkit-line-clamp", previewLineClamp);
+        const previewEl = card.createDiv({
+          cls: `ul-sheet-card-preview ul-clamp-${previewLineClamp}`,
+        });
         previewEl.setText(item.preview);
       }
 
@@ -436,7 +437,7 @@ export class UlyssesSheetListView extends ItemView {
             .setTitle("删除文稿")
             .setIcon("trash")
             .onClick(() => {
-              void this.app.vault.trash(item.file, true);
+              void this.app.fileManager.trashFile(item.file);
             }),
         );
         menu.showAtMouseEvent(evt);
