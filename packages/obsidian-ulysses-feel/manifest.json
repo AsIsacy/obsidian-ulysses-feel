@@ -1,7 +1,7 @@
 {
   "id": "ulysses-feel",
   "name": "Ulysses Feel",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "minAppVersion": "1.6.6",
   "description": "Out-of-the-box Ulysses writing experience: zero-jump Live Preview syntax, perceptual typewriter scrolling, focus mode, undo-safe ghost auto-pairing, titleless sheets, and a Sheet List sidebar.",
   "author": "AsIsacy",

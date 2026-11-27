@@ -57,6 +57,7 @@ export interface UlyssesFeelSettings {
   // Standalone Ulysses Canvas (Zero-dependency Chrome & Scrollbar Hygiene)
   hideInlineTitle: boolean;
   hideScrollbars: boolean;
+  hideRibbonWhenCollapsed: boolean;
   distractionFreeCanvas: boolean;
 
   // Titleless Sheets & Sheet List (Ulysses Sheet workflow)
@@ -113,6 +114,7 @@ export const DEFAULT_SETTINGS: UlyssesFeelSettings = {
 
   hideInlineTitle: true,
   hideScrollbars: true,
+  hideRibbonWhenCollapsed: true,
   distractionFreeCanvas: false,
 
   autoTitleUntitledSheets: true,
@@ -490,6 +492,18 @@ export class UlyssesFeelSettingTab extends PluginSettingTab {
           .setValue(this.ulyssesPlugin.settings.hideScrollbars)
           .onChange(async (v) => {
             this.ulyssesPlugin.settings.hideScrollbars = v;
+            await this.ulyssesPlugin.saveAndApply();
+          }),
+      );
+
+    new Setting(containerEl)
+      .setName(t("setHideCollapsedRibbonName"))
+      .setDesc(t("setHideCollapsedRibbonDesc"))
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.ulyssesPlugin.settings.hideRibbonWhenCollapsed)
+          .onChange(async (v) => {
+            this.ulyssesPlugin.settings.hideRibbonWhenCollapsed = v;
             await this.ulyssesPlugin.saveAndApply();
           }),
       );

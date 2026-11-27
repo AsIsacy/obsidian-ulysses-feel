@@ -79,6 +79,21 @@ body.ulysses-feel-enabled.ulysses-feel-hide-scrollbars .markdown-preview-view {
   scrollbar-width: none;
 }
 
+/* Hide left icon ribbon automatically whenever the left sidebar is collapsed
+   (matches both Obsidian 1.6–1.14 .mod-left and Obsidian 1.15+ .mod-primary,
+    and zeroes --ribbon-width like Obsidian's native body:not(.show-ribbon) so
+    macOS traffic lights & top tab headers never collide in windowed mode). */
+body.ulysses-feel-enabled.ulysses-feel-hide-collapsed-ribbon:has(
+    .workspace-ribbon.side-dock-ribbon.mod-left.is-collapsed,
+    .workspace-ribbon.side-dock-ribbon.mod-primary.is-collapsed
+  ) {
+  --ribbon-width: 0px;
+}
+body.ulysses-feel-enabled.ulysses-feel-hide-collapsed-ribbon .workspace-ribbon.side-dock-ribbon.mod-left.is-collapsed,
+body.ulysses-feel-enabled.ulysses-feel-hide-collapsed-ribbon .workspace-ribbon.side-dock-ribbon.mod-primary.is-collapsed {
+  display: none;
+}
+
 /* Optional Distraction-Free Canvas (hides tab bar, view header, status bar; hover top edge reveals) */
 body.ulysses-feel-enabled.ulysses-feel-distraction-free .workspace-split.mod-root .workspace-tab-header-container {
   opacity: 0;

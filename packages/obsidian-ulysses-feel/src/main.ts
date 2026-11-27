@@ -78,6 +78,7 @@ export default class UlyssesFeelPlugin extends Plugin {
       "ulysses-feel-dim-inactive",
       "ulysses-feel-hide-inline-title",
       "ulysses-feel-hide-scrollbars",
+      "ulysses-feel-hide-collapsed-ribbon",
       "ulysses-feel-distraction-free",
     );
     const style = activeDocument.body.style;
@@ -207,6 +208,7 @@ export default class UlyssesFeelPlugin extends Plugin {
     cls.toggle("ulysses-feel-dim-inactive", s.dimInactivePanes);
     cls.toggle("ulysses-feel-hide-inline-title", s.hideInlineTitle);
     cls.toggle("ulysses-feel-hide-scrollbars", s.hideScrollbars);
+    cls.toggle("ulysses-feel-hide-collapsed-ribbon", s.hideRibbonWhenCollapsed);
     cls.toggle("ulysses-feel-distraction-free", s.distractionFreeCanvas);
 
     const style = activeDocument.body.style;

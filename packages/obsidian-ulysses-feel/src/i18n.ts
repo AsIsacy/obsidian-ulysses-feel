@@ -134,6 +134,9 @@ const EN = {
     "Hide the inline filename header inside notes via scoped CSS for pure titleless writing.",
   setHideScrollbarsName: "Hide editor scrollbars",
   setHideScrollbarsDesc: "Keep a clean paper-like writing canvas without scrollbars.",
+  setHideCollapsedRibbonName: "Hide left ribbon when sidebar is collapsed",
+  setHideCollapsedRibbonDesc:
+    "Automatically hide the left icon ribbon whenever the left sidebar is collapsed (works seamlessly with your toggle-left-sidebar hotkey).",
   setDistractionFreeName: "Distraction-free canvas",
   setDistractionFreeDesc:
     "Hide the tab bar, view header breadcrumb, and status bar (hover top edge to reveal).",
@@ -303,6 +306,9 @@ const ZH: Record<I18nKey, string> = {
   setHideInlineTitleDesc: "通过作用域 CSS 隐藏正文上方的文件名标题框，开箱即享无标题写作（关闭插件自动恢复）。",
   setHideScrollbarsName: "隐藏编辑器滚动条",
   setHideScrollbarsDesc: "保持干净的纸张写作画布，无需额外安装 Hider 插件。",
+  setHideCollapsedRibbonName: "收起左侧边栏时联动隐藏功能区图标栏",
+  setHideCollapsedRibbonDesc:
+    "折叠左侧边栏（如按 Option+Cmd+S）时同步隐去最左侧的 Ribbon 图标竖条，展开侧边栏时自动恢复。",
   setDistractionFreeName: "极简专注画布",
   setDistractionFreeDesc: "隐藏顶部标签栏、文档路径栏与底部状态栏（鼠标悬停屏幕顶部边缘可平滑唤出）。",
 
