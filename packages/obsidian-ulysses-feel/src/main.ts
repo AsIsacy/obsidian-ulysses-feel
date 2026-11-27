@@ -17,6 +17,7 @@ import {
   UlyssesSheetListView,
   VIEW_TYPE_ULYSSES_SHEETS,
 } from "./sheet-list-view.js";
+import { t } from "./i18n.js";
 
 const TYPEWRITER_CYCLE: TypewriterScrollMode[] = [
   "off",
@@ -53,7 +54,7 @@ export default class UlyssesFeelPlugin extends Plugin {
       (leaf) => new UlyssesSheetListView(leaf, this),
     );
 
-    this.addRibbonIcon("sheets-in-box", "Open Ulysses Sheet List", () => {
+    this.addRibbonIcon("sheets-in-box", t("ribbonOpenSheetList"), () => {
       void this.activateSheetListView();
     });
 
@@ -226,10 +227,7 @@ export default class UlyssesFeelPlugin extends Plugin {
   private setupStatusBar(): void {
     this.statusBarEl = this.addStatusBarItem();
     this.statusBarEl.addClass("ul-status-bar-item");
-    this.statusBarEl.setAttribute(
-      "aria-label",
-      "Click to cycle focus mode · Shift+Click to cycle typewriter mode",
-    );
+    this.statusBarEl.setAttribute("aria-label", t("statusBarAria"));
     this.registerDomEvent(this.statusBarEl, "click", async (evt) => {
       if (evt.shiftKey) {
         await this.cycleTypewriterMode();
@@ -258,7 +256,7 @@ export default class UlyssesFeelPlugin extends Plugin {
     this.settings.typewriterMode = next;
     this.settings.typewriterEnabled = next !== "off";
     await this.saveAndApply();
-    new Notice(`Typewriter mode: ${next}`);
+    new Notice(`${t("noticeTypewriter")} ${next}`);
   }
 
   private async cycleFocusMode(): Promise<void> {
@@ -266,61 +264,61 @@ export default class UlyssesFeelPlugin extends Plugin {
     const next = FOCUS_CYCLE[(idx + 1) % FOCUS_CYCLE.length]!;
     this.settings.focusMode = next;
     await this.saveAndApply();
-    new Notice(`Focus mode: ${next}`);
+    new Notice(`${t("noticeFocus")} ${next}`);
   }
 
   private registerCommands(): void {
     this.addCommand({
       id: "cycle-typewriter-mode",
-      name: "Cycle typewriter scroll mode",
+      name: t("cmdCycleTypewriter"),
       callback: () => void this.cycleTypewriterMode(),
     });
 
     this.addCommand({
       id: "cycle-focus-mode",
-      name: "Cycle focus mode",
+      name: t("cmdCycleFocus"),
       callback: () => void this.cycleFocusMode(),
     });
 
     this.addCommand({
       id: "toggle-baseline-highlight",
-      name: "Toggle capsule baseline highlight",
+      name: t("cmdToggleBaseline"),
       callback: async () => {
         this.settings.baselineHighlightEnabled = !this.settings.baselineHighlightEnabled;
         await this.saveAndApply();
         new Notice(
-          `Baseline highlight: ${this.settings.baselineHighlightEnabled ? "on" : "off"}`,
+          `${t("noticeBaseline")} ${this.settings.baselineHighlightEnabled ? t("noticeOn") : t("noticeOff")}`,
         );
       },
     });
 
     this.addCommand({
       id: "toggle-hanging-outdent",
-      name: "Toggle hanging outdent markup",
+      name: t("cmdToggleOutdent"),
       callback: async () => {
         this.settings.hangingOutdentEnabled = !this.settings.hangingOutdentEnabled;
         await this.saveAndApply();
         new Notice(
-          `Hanging outdent: ${this.settings.hangingOutdentEnabled ? "on" : "off"}`,
+          `${t("noticeOutdent")} ${this.settings.hangingOutdentEnabled ? t("noticeOn") : t("noticeOff")}`,
         );
       },
     });
 
     this.addCommand({
       id: "toggle-zero-jump-inline-syntax",
-      name: "Toggle zero-jump inline syntax (Live Preview)",
+      name: t("cmdToggleZeroJump"),
       callback: async () => {
         this.settings.zeroJumpInlineSyntax = !this.settings.zeroJumpInlineSyntax;
         await this.saveAndApply();
         new Notice(
-          `Zero-jump inline syntax: ${this.settings.zeroJumpInlineSyntax ? "on" : "off"}`,
+          `${t("noticeZeroJump")} ${this.settings.zeroJumpInlineSyntax ? t("noticeOn") : t("noticeOff")}`,
         );
       },
     });
 
     this.addCommand({
       id: "new-titleless-sheet",
-      name: "New titleless sheet",
+      name: t("cmdNewTitlelessSheet"),
       callback: () => {
         void this.titlelessSheets.createTitlelessSheet();
       },
@@ -328,7 +326,7 @@ export default class UlyssesFeelPlugin extends Plugin {
 
     this.addCommand({
       id: "open-sheet-list-panel",
-      name: "Open sheet list sidebar",
+      name: t("cmdOpenSheetList"),
       callback: () => {
         void this.activateSheetListView();
       },
@@ -336,7 +334,7 @@ export default class UlyssesFeelPlugin extends Plugin {
 
     this.addCommand({
       id: "sync-filename-from-first-line",
-      name: "Sync current filename from first line",
+      name: t("cmdSyncFilename"),
       callback: () => {
         void this.titlelessSheets.syncActiveFileFromFirstLine();
       },
@@ -344,19 +342,19 @@ export default class UlyssesFeelPlugin extends Plugin {
 
     this.addCommand({
       id: "toggle-distraction-free-canvas",
-      name: "Toggle distraction-free canvas",
+      name: t("cmdToggleDistractionFree"),
       callback: async () => {
         this.settings.distractionFreeCanvas = !this.settings.distractionFreeCanvas;
         await this.saveAndApply();
         new Notice(
-          `Distraction-free canvas: ${this.settings.distractionFreeCanvas ? "on" : "off"}`,
+          `${t("noticeDistractionFree")} ${this.settings.distractionFreeCanvas ? t("noticeOn") : t("noticeOff")}`,
         );
       },
     });
 
     this.addCommand({
       id: "toggle-pure-source-writing-mode",
-      name: "Toggle pure source mode",
+      name: t("cmdTogglePureSource"),
       checkCallback: (checking) => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view) return false;
@@ -371,9 +369,7 @@ export default class UlyssesFeelPlugin extends Plugin {
           state: { ...curState, mode: "source", source: nextSource },
         });
         new Notice(
-          nextSource
-            ? "Switched to pure source mode"
-            : "Switched back to Live Preview",
+          nextSource ? t("noticePureSourceOn") : t("noticePureSourceOff"),
         );
         return true;
       },

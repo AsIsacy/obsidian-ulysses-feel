@@ -6,6 +6,7 @@ import {
   sanitizeFilenameFromTitle,
 } from "@writer/cm6-ulysses-core";
 import type UlyssesFeelPlugin from "./main.js";
+import { t } from "./i18n.js";
 
 /**
  * Manages Ulysses-style Titleless Sheet creation and iCloud-safe automatic
@@ -152,15 +153,15 @@ export class TitlelessSheetManager {
   async syncActiveFileFromFirstLine(): Promise<void> {
     const file = this.app.workspace.getActiveFile();
     if (!file || file.extension !== "md") {
-      new Notice("No active Markdown note to sync.");
+      new Notice(t("noticeNoActiveNote"));
       return;
     }
 
     const renamed = await this.syncFileFilename(file, true);
     if (renamed) {
-      new Notice(`Renamed to "${renamed}"`);
+      new Notice(`${t("noticeRenamedTo")} "${renamed}"`);
     } else {
-      new Notice("Filename already matches first line (or note is empty).");
+      new Notice(t("noticeAlreadySynced"));
     }
   }
 

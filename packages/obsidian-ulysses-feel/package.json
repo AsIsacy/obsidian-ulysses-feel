@@ -1,6 +1,6 @@
 {
   "name": "ulysses-feel",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Non-invasive Ulysses-inspired typing ergonomics for Obsidian, powered by portable CodeMirror 6 extensions.",
   "type": "module",
   "scripts": {

@@ -13,6 +13,7 @@ import {
   isUntitledLikeBasename,
 } from "@writer/cm6-ulysses-core";
 import type UlyssesFeelPlugin from "./main.js";
+import { getActiveLocale, t } from "./i18n.js";
 
 export const VIEW_TYPE_ULYSSES_SHEETS = "ulysses-sheet-list";
 
@@ -63,7 +64,7 @@ export class UlyssesSheetListView extends ItemView {
   }
 
   override getDisplayText(): string {
-    return "Ulysses Sheets";
+    return t("sheetListTitle");
   }
 
   override getIcon(): string {
@@ -81,7 +82,7 @@ export class UlyssesSheetListView extends ItemView {
 
     this.folderSelectEl = header.createEl("select", {
       cls: "ul-sheet-folder-select dropdown",
-      attr: { "aria-label": "Filter folder" },
+      attr: { "aria-label": t("sheetFolderFilterAria") },
     });
     this.folderSelectEl.addEventListener("change", () => {
       this.selectedFolderPath = this.folderSelectEl?.value ?? "__ALL__";
@@ -92,7 +93,7 @@ export class UlyssesSheetListView extends ItemView {
 
     this.sortBtnEl = actions.createEl("button", {
       cls: "clickable-icon ul-sheet-icon-btn",
-      attr: { "aria-label": "Sort: Modified time (click to cycle)" },
+      attr: { "aria-label": t("sheetSortMtimeAria") },
     });
     setIcon(this.sortBtnEl, "arrow-down-wide-narrow");
     this.sortBtnEl.addEventListener("click", () => {
@@ -108,7 +109,7 @@ export class UlyssesSheetListView extends ItemView {
 
     const newBtn = actions.createEl("button", {
       cls: "clickable-icon ul-sheet-icon-btn ul-sheet-new-btn",
-      attr: { "aria-label": "New Titleless Sheet" },
+      attr: { "aria-label": t("sheetNewAria") },
     });
     setIcon(newBtn, "square-pen");
     newBtn.addEventListener("click", () => {
@@ -121,7 +122,7 @@ export class UlyssesSheetListView extends ItemView {
     const searchInput = searchRow.createEl("input", {
       type: "search",
       cls: "ul-sheet-search-input",
-      placeholder: "筛选文稿首行或摘要…",
+      placeholder: t("sheetSearchPlaceholder"),
     });
     searchInput.addEventListener("input", () => {
       this.searchQuery = searchInput.value.trim().toLowerCase();
@@ -198,10 +199,10 @@ export class UlyssesSheetListView extends ItemView {
     if (!this.sortBtnEl) return;
     const label =
       this.sortMode === "mtime"
-        ? "排序：最近修改（点击切换）"
+        ? t("sheetSortMtimeAria")
         : this.sortMode === "ctime"
-          ? "排序：最近创建（点击切换）"
-          : "排序：按首行标题（点击切换）";
+          ? t("sheetSortCtimeAria")
+          : t("sheetSortTitleAria");
     this.sortBtnEl.setAttribute("aria-label", label);
   }
 
@@ -219,8 +220,8 @@ export class UlyssesSheetListView extends ItemView {
     const prev = this.selectedFolderPath;
     select.empty();
 
-    select.createEl("option", { value: "__ALL__", text: "全部文稿" });
-    select.createEl("option", { value: "__ROOT__", text: "根目录" });
+    select.createEl("option", { value: "__ALL__", text: t("sheetAllNotes") });
+    select.createEl("option", { value: "__ROOT__", text: t("sheetRootFolder") });
 
     const folders: TFolder[] = [];
     for (const af of this.app.vault.getAllLoadedFiles()) {
@@ -228,7 +229,8 @@ export class UlyssesSheetListView extends ItemView {
         folders.push(af);
       }
     }
-    folders.sort((a, b) => a.path.localeCompare(b.path, "zh-CN"));
+    const sortLocale = getActiveLocale() === "zh" ? "zh-CN" : "en";
+    folders.sort((a, b) => a.path.localeCompare(b.path, sortLocale));
 
     for (const f of folders) {
       select.createEl("option", { value: f.path, text: f.path });
@@ -305,7 +307,7 @@ export class UlyssesSheetListView extends ItemView {
         const displayTitle = summary.title
           ? summary.title
           : isUntitledLikeBasename(file.basename)
-            ? "空白新文稿"
+            ? t("sheetUntitledFallback")
             : file.basename;
         const folderLabel =
           file.parent && !file.parent.isRoot() ? file.parent.path : "";
@@ -334,19 +336,20 @@ export class UlyssesSheetListView extends ItemView {
     }
 
     if (this.sortMode === "title") {
+      const sortLocale = getActiveLocale() === "zh" ? "zh-CN" : "en";
       filtered.sort((a, b) =>
-        a.displayTitle.localeCompare(b.displayTitle, "zh-CN"),
+        a.displayTitle.localeCompare(b.displayTitle, sortLocale),
       );
     }
 
     if (this.countEl) {
       const sortLabel =
         this.sortMode === "mtime"
-          ? "按修改时间"
+          ? t("sheetSortMtimeShort")
           : this.sortMode === "ctime"
-            ? "按创建时间"
-            : "按标题";
-      this.countEl.setText(`${filtered.length} 篇文稿 · ${sortLabel}`);
+            ? t("sheetSortCtimeShort")
+            : t("sheetSortTitleShort");
+      this.countEl.setText(`${filtered.length} ${t("sheetCountSuffix")} · ${sortLabel}`);
     }
 
     listEl.empty();
@@ -354,7 +357,7 @@ export class UlyssesSheetListView extends ItemView {
 
     if (filtered.length === 0) {
       const empty = listEl.createDiv({ cls: "ul-sheet-empty" });
-      empty.setText(this.searchQuery ? "没有匹配的文稿" : "暂无文稿，点击右上角新建");
+      empty.setText(this.searchQuery ? t("sheetEmptySearch") : t("sheetEmptyFolder"));
       return;
     }
 
@@ -397,7 +400,7 @@ export class UlyssesSheetListView extends ItemView {
 
       footer.createSpan({
         cls: "ul-sheet-card-words",
-        text: `${item.wordCount} 字`,
+        text: `${item.wordCount} ${t("sheetWordsSuffix")}`,
       });
 
       card.addEventListener("click", (evt) => {
@@ -415,7 +418,7 @@ export class UlyssesSheetListView extends ItemView {
         const menu = new Menu();
         menu.addItem((mi) =>
           mi
-            .setTitle("在新标签页打开")
+            .setTitle(t("sheetMenuOpenNewTab"))
             .setIcon("file-plus")
             .onClick(() => {
               void this.app.workspace.getLeaf(true).openFile(item.file);
@@ -423,7 +426,7 @@ export class UlyssesSheetListView extends ItemView {
         );
         menu.addItem((mi) =>
           mi
-            .setTitle("按正文首行同步文件名")
+            .setTitle(t("sheetMenuSyncFilename"))
             .setIcon("pencil")
             .onClick(async () => {
               const leaf = this.app.workspace.getLeaf(false);
@@ -434,7 +437,7 @@ export class UlyssesSheetListView extends ItemView {
         menu.addSeparator();
         menu.addItem((mi) =>
           mi
-            .setTitle("删除文稿")
+            .setTitle(t("sheetMenuTrash"))
             .setIcon("trash")
             .onClick(() => {
               void this.app.fileManager.trashFile(item.file);
@@ -457,14 +460,14 @@ export class UlyssesSheetListView extends ItemView {
 
 function formatRelativeTime(mtime: number): string {
   const diffSec = Math.max(0, Math.floor((Date.now() - mtime) / 1000));
-  if (diffSec < 60) return "刚刚";
+  if (diffSec < 60) return t("timeJustNow");
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} 分钟前`;
+  if (diffMin < 60) return `${diffMin}${t("timeMinAgo")}`;
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr} 小时前`;
+  if (diffHr < 24) return `${diffHr}${t("timeHrAgo")}`;
   const diffDay = Math.floor(diffHr / 24);
-  if (diffDay === 1) return "昨天";
-  if (diffDay < 7) return `${diffDay} 天前`;
+  if (diffDay === 1) return t("timeYesterday");
+  if (diffDay < 7) return `${diffDay}${t("timeDayAgo")}`;
   const d = new Date(mtime);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
